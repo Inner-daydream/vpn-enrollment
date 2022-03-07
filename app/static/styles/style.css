@@ -1,0 +1,12 @@
+html body{
+    background-color: rgb(37, 37, 43);
+    text-align: center;
+}
+.black-box {
+    border-width: thin;
+    border-color: black;
+    border-style: solid;
+}
+canvas {
+    visibility: hidden;
+}
