@@ -26,13 +26,11 @@ click_button.addEventListener('click', function() {
 			if (response == "Match"){
 				loginStatus.style.color = 'green'
 				loginStatus.innerHTML = "Identity verified !";
-				console.log('match')
-				// window.location.href = "/config";
+				window.location.href = "/generate"
 			}
 			else {
 				loginStatus.style.color = 'red'
 				loginStatus.innerHTML = "Failed to verify your identity !"
-				console.log('no match')
 			}
 		}
 	);

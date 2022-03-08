@@ -13,7 +13,7 @@
     <div class="container d-flex align-items-center text-center flex-column m-5 pt-5 pb-5">
         <div class="black-box p-5">
             <div id="welcome-header" class = "text-white p-2">
-                <h1 class="mb-3">Are you really {{ user.get("name") }} ?</h1>
+                <h1 class="mb-3">Are you really {{ user }} ?</h1>
             </div>
             <div class="p-3 mb-3">
                 <video id="video" autoplay poster="{{ url_for('static',filename='resources/face-recognition-512.png') }}"></video>
