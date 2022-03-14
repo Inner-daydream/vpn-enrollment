@@ -2,6 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,python,venv
 #macOS
 .DS_STORE
+
+#Wireguard
+wg-config/
 # Terraform
 setup/terraform/.terraform
 setup/terraform/.terraform.lock.hcl

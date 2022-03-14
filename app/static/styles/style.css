@@ -10,3 +10,13 @@ html body{
 canvas {
     visibility: hidden;
 }
+.certificate_grid {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;  
+}
+
+#unsuccessful_generate {
+    visibility: hidden;
+}

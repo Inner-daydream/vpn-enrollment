@@ -1,4 +1,6 @@
-from flask import Flask, render_template, session, request, redirect, url_for, flash,current_app
+from crypt import methods
+from csv import excel
+from flask import Flask, render_template, session, request, redirect, url_for, flash,current_app,send_file
 import flask_login
 from app import app
 from app import oauth2
@@ -6,8 +8,9 @@ import boto3
 from botocore.exceptions import ClientError
 import app.dynamodb as dynamodb
 from app.forms import LoginForm
-import msal
 import base64
+import app.wireguard_management as wireguard
+import io
 
 
 with app.app_context():
@@ -16,7 +19,11 @@ with app.app_context():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return dynamodb.User(user_id)
+    try:
+        user = dynamodb.User(user_id)
+    except ValueError:
+        user = None
+    return user
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -58,10 +65,8 @@ def compare_faces():
             },
             QualityFilter='NONE'
         )   
-        print(response)
         if response['FaceMatches'][0]['Similarity'] >= 94:
             session['facial_recognition'] = True
-            print(f'Status right after check {flask_login.current_user.facial_recognition}')
             return "Match"
         else:
             return "NoMatch"
@@ -71,17 +76,29 @@ def compare_faces():
 @app.route("/generate")
 @flask_login.login_required
 def generate():
-    print(f' facial recognition status = {flask_login.current_user.facial_recognition}')
     if not flask_login.current_user.facial_recognition:
         redirect(url_for(dashboard))
-    peers = ["firstPeer","secondPeer","thirdPeer","fourthPeer","fifthPeer"]
+    peers = dynamodb.get_peers(Id=flask_login.current_user.id)
+    for peer in peers:
+        print(peer)
     return render_template("generate.html",peers=peers)
-
 @app.route("/dashboard")
 @flask_login.login_required
 def dashboard():
     return render_template('landing.html', user=flask_login.current_user.username)
+@app.route("/generate_configuration", methods=['POST'])
+@flask_login.login_required
+def generate_configuration():
+    peer_name = request.form['configuration_name']
+    filename,client_configuration_string= wireguard.add_peer(Id=flask_login.current_user.id,peer_name=peer_name)
+    return send_file(path_or_file=io.BytesIO(bytes(client_configuration_string,'UTF-8')),download_name=filename,as_attachment=True)
 
+@app.route("/revoke", methods=["POST"])
+@flask_login.login_required
+def revoke():
+    peer_name = request.form['peer_name']
+    wireguard.remove_peer(Id=flask_login.current_user.id,peer_name=peer_name)
+    return redirect(url_for("generate"))
 
 @app.route(config['REDIRECT_PATH'])  # Its absolute URL must match your app's redirect_uri set in AAD
 def ms_authorized():

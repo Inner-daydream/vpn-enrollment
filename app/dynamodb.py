@@ -8,11 +8,12 @@ import config
 import flask_login
 import flask
 
+config = config.AWSConfig
+
 class User(flask_login.UserMixin):
     def __init__(self, id,session=flask.session):
         user_data = get_user(id)
         self.id = id
-        print(user_data)
         self.admin = user_data['Admin']
         if session.get('user'):
             self.ms_user = True
@@ -21,9 +22,62 @@ class User(flask_login.UserMixin):
             self.ms_user = False
             self.username = user_data['Displayname']
         self.facial_recognition = session['facial_recognition']
-        
 
-config = config.AWSConfig
+def add_peer(Id,peer_name,public_key,AllowedIPs,dynamodb=None):
+    if not dynamodb:
+        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+    table = dynamodb.Table('Users')
+    response = table.update_item(
+        Key={
+            "Id": Id
+        },
+        UpdateExpression=f"set #AttributeName.#NestedAttributeName=:p",
+        ExpressionAttributeNames={
+            "#NestedAttributeName": peer_name,
+            "#AttributeName": "Peers"
+        },
+        ConditionExpression = "attribute_not_exists(#AttributeName.#NestedAttributeName)",
+        ExpressionAttributeValues={
+            ':p': {
+                "Public_key": public_key,
+                "AllowedIPs": AllowedIPs,
+                "Description": peer_name
+            }
+        },
+        ReturnValues="UPDATED_NEW"
+    )
+    return response
+def remove_peer(Id,peer_name,dynamodb=None):
+    if not dynamodb:
+        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+    table = dynamodb.Table('Users')
+    response = table.update_item(
+        Key={
+            "Id": Id
+        },
+        UpdateExpression=f"remove #AttributeName.#NestedAttributeName",
+        ExpressionAttributeNames={
+            "#NestedAttributeName": peer_name,
+            "#AttributeName": "Peers"
+        },
+        ConditionExpression = "attribute_exists(#AttributeName.#NestedAttributeName)",
+        ReturnValues="UPDATED_NEW"
+    )
+    return response
+def get_peers(Id,dynamodb=None):
+    if not dynamodb:
+        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+    table = dynamodb.Table('Users')
+    try:
+        response = table.get_item(
+            Key={'Id' : Id},
+            ProjectionExpression="Peers"
+        )
+    except botocore.exceptions.ClientError as e:
+        print(e.response['Error']['Message'])
+    if "Item" in response:
+        return response['Item']['Peers']
+    
 def create_users_table(dynamodb=None):
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
@@ -61,7 +115,8 @@ def new_user(password=None,dynamodb=None,admin=False,Id=None,displayname = None)
             'Id': Id,
             'Password': password,
             'Admin': admin,
-            'Displayname':displayname
+            'Displayname':displayname,
+            'Peers': {}
        }
     )
     return response
