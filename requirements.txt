@@ -29,7 +29,7 @@ s3transfer==0.5.1
 six==1.16.0
 subnet-utils==0.5.1
 urllib3==1.26.8
--e git+https://github.com/Inner-daydream/vpn-enrollment.git@7e57302c3a0e3f75a4043c9a62d42bf6197f5b49#egg=VPNEnrollment
+-e git+https://github.com/Inner-daydream/vpn-enrollment.git@c5c09cec1b28983f98cb40a0268c7137440fec87#egg=VPNEnrollment
 Werkzeug==2.0.3
 wireguard==0.2.5
 WTForms==3.0.1

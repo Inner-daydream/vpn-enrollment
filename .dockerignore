@@ -1,0 +1,9 @@
+README.md
+.git/
+.flaskenv
+dockerfile
+.dockerignore
+venv/
+setup/
+flask_session/
+**/__pycache__/

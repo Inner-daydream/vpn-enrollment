@@ -5,14 +5,16 @@ class FlaskConfig(object):
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
     AUTHORITY = os.environ.get('AUTHORITY') or "https://login.microsoftonline.com/49f7e826-1d46-4fd2-a3ca-a43422c8f815"
     REDIRECT_PATH = "/getAToken"
-    ENDPOINT = os.environ.get('ENDPOINT') or 'https://graph.microsoft.com/v1.0/users'
-    SCOPE = os.environ.get('ENDPOINT') or ["User.ReadBasic.All"]
+    GRAPH_ENDPOINT = os.environ.get('GRAPH_ENDPOINT') or 'https://graph.microsoft.com/v1.0/users'
+    SCOPE = os.environ.get('SCOPE') or ["User.ReadBasic.All"]
     SESSION_TYPE = os.environ.get('SESSION_TYPE') or "filesystem"
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME') or "admin"
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 class AWSConfig(object):
     DYNAMODB_ENDPOINT = os.environ.get('DYNAMODB_ENPOINT') or "http://localhost:8000"
 class WireGuardConfig(object):
+    DNS = os.environ.get('DNS') or "192.168.1.1"
+    PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
     SERVER_SUBNET = os.environ.get('SERVER_SUBNET') or "10.200.200.0/24"
     SERVER_ADDRESS = os.environ.get('SERVER_ADDRESS') or "10.200.200.1"
     SERVER_DESCRIPTION = os.environ.get('SERVER_DESCRIPTION') or "VPN Main"
@@ -21,3 +23,4 @@ class WireGuardConfig(object):
     DOWNLOAD_CONFIG_PATH = os.environ.get('DOWNLOAD_CONFIG_PATH') or "./static/download"
     ENDPOINT = os.environ.get('ENDPOINT')
     KEEPALIVE = os.environ.get('KEEPALIVE') or "25"
+    ALLOWED_IPS= os.environ.get('ALLOWED_IPS') or "192.168.1.0/24"
