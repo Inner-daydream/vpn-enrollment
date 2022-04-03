@@ -1,5 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/flask,python,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,python,venv
+docker-compose.yaml
 #macOS
 .DS_STORE
 

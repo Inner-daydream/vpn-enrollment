@@ -1,6 +1,5 @@
 README.md
 .git/
-.flaskenv
 dockerfile
 .dockerignore
 venv/

@@ -59,13 +59,13 @@ def compare_faces():
             },
             TargetImage={
                 'S3Object': {
-                    'Bucket': 'facial-recognition-store',
+                    'Bucket': 'vpnenrollment',
                     'Name': f'models/{flask_login.current_user.username}.jpg',
                 }
             },
             QualityFilter='NONE'
         )   
-        if response['FaceMatches'][0]['Similarity'] >= 94:
+        if response['FaceMatches'][0]['Similarity'] >= 98:
             session['facial_recognition'] = True
             return "Match"
         else:
@@ -79,8 +79,6 @@ def generate():
     if not flask_login.current_user.facial_recognition:
         redirect(url_for(dashboard))
     peers = dynamodb.get_peers(Id=flask_login.current_user.id)
-    for peer in peers:
-        print(peer)
     return render_template("generate.html",peers=peers)
 @app.route("/dashboard")
 @flask_login.login_required
@@ -90,7 +88,7 @@ def dashboard():
 @flask_login.login_required
 def generate_configuration():
     peer_name = request.form['configuration_name']
-    filename,client_configuration_string= wireguard.add_peer(Id=flask_login.current_user.id,peer_name=peer_name)
+    filename,client_configuration_string = wireguard.add_peer(Id=flask_login.current_user.id,peer_name=peer_name)
     return send_file(path_or_file=io.BytesIO(bytes(client_configuration_string,'UTF-8')),download_name=filename,as_attachment=True)
 
 @app.route("/revoke", methods=["POST"])
