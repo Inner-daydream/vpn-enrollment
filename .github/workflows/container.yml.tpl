@@ -4,7 +4,17 @@ containers:
   vpnenrollment:
     command: []
     environment:
-      test: test
+      SECRET_KEY: ${SECRET_KEY}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
+      ENDPOINT: ${ENDPOINT}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      PRODUCTION_CONFIG_PATH: /etc/wireguard
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     image: ${LATEST_VPNENROLLMENT_IMAGE}
     ports:
       "80": HTTP
