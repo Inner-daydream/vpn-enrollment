@@ -11,7 +11,7 @@ class FlaskConfig(object):
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME') or "contact@lucasquitman.fr"
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 class AWSConfig(object):
-    DYNAMODB_ENDPOINT = os.environ.get('DYNAMODB_ENDPOINT') or "http://localhost:8000"
+    DYNAMODB_ENDPOINT = os.environ.get('DYNAMODB_ENDPOINT')
 class WireGuardConfig(object):
     DNS = os.environ.get('DNS') or "1.1.1.1"
     PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
