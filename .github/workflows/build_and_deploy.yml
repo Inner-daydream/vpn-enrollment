@@ -1,9 +1,11 @@
 name: Build and deploy Docker to AWS Lightsail Container Service
 
-on:
+on: 
   push:
    tags:
     - v*.**
+  workflow_dispatch:
+  
     
 
 permissions:
