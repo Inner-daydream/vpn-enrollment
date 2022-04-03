@@ -69,7 +69,7 @@ jobs:
 
     - name: Get the latest vpnenrollment image from Lightsail
       run: >
-        echo "LATEST_VPNENROLLMENT_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} | jq -r '.containerImages | map(select(.image | contains ("php") )) | .[0].image')" >> $GITHUB_ENV
+        echo "LATEST_VPNENROLLMENT_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} | jq -r '.containerImages | map(select(.image | contains ("vpnenrollment") )) | .[0].image')" >> $GITHUB_ENV
    
     - name: Test value of LATEST_VPNENROLLMENT_IMAGE var
       run: |
