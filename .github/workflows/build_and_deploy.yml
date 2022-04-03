@@ -1,5 +1,9 @@
 name: Build and deploy Docker to AWS Lightsail Container Service
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
    branches:
