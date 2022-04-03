@@ -33,7 +33,7 @@ on:
       - v*.**
 
 env:
-  AWS_REGION: eu-west-3                  
+  AWS_REGION: eu-west-3               
   ECR_REPOSITORY: public.ecr.aws/f8j0p4q3/vpn_enrollment          
   ECS_SERVICE: vpnenrollment              
   ECS_CLUSTER: ecs-cluster               
