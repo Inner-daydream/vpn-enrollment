@@ -80,10 +80,10 @@ jobs:
         cat container_with_image.yml
       env:
          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION}}
+         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-         CLIENT_ID: ${{ secrets.CLIENT_ID}}
-         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
+         CLIENT_ID: ${{ secrets.CLIENT_ID }}
+         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
          DYNAMODB_ENDPOINT: ${{ secrets.DYNAMODB_ENDPOINT }}
          ENDPOINT: ${{ secrets.ENDPOINT }}
          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
