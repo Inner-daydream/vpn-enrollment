@@ -1,14 +1,17 @@
 name: Build and deploy Docker to AWS Lightsail Container Service
 
+on: 
+  push:
+   tags:
+    - v*.**
+  workflow_dispatch:
+  
+    
+
 permissions:
   id-token: write
   contents: read
-
-on:
-  push:
-   branches:
-     - main
-
+  
 jobs:
   build_and_deploy_to_lightsail_container_service:
     runs-on: ubuntu-latest
@@ -29,13 +32,14 @@ jobs:
        aws --version
        sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
        sudo chmod +x /usr/local/bin/lightsailctl
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+       
+   
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@master
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION}}
-
+        role-to-assume: arn:aws:iam::776306827797:role/ghactions
+        aws-region: eu-west-3
+        
     - name: Build Docker image
       run: >
         docker build .
@@ -66,7 +70,7 @@ jobs:
 
     - name: Get the latest vpnenrollment image from Lightsail
       run: >
-        echo "LATEST_VPNENROLLMENT_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} | jq -r '.containerImages | map(select(.image | contains ("php") )) | .[0].image')" >> $GITHUB_ENV
+        echo "LATEST_VPNENROLLMENT_IMAGE=$(aws lightsail get-container-images --service-name ${{ env.SERVICE_NAME }} | jq -r '.containerImages | map(select(.image | contains ("vpnenrollment") )) | .[0].image')" >> $GITHUB_ENV
    
     - name: Test value of LATEST_VPNENROLLMENT_IMAGE var
       run: |
@@ -76,6 +80,19 @@ jobs:
       run: |
         cat .github/workflows/container.yml.tpl | envsubst > container_with_image.yml
         cat container_with_image.yml
+      env:
+         ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         CLIENT_ID: ${{ secrets.CLIENT_ID }}
+         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+         DYNAMODB_ENDPOINT: ${{ secrets.DYNAMODB_ENDPOINT }}
+         ENDPOINT: ${{ secrets.ENDPOINT }}
+         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+         SECRET_KEY: ${{ secrets.SECRET_KEY }}
+         SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+
     - name: Deploy to Lightsail
       run: >
         aws lightsail create-container-service-deployment
