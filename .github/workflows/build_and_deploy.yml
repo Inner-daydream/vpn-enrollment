@@ -78,6 +78,18 @@ jobs:
       run: |
         cat .github/workflows/container.yml.tpl | envsubst > container_with_image.yml
         cat container_with_image.yml
+      env:
+         ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+         AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION}}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+         CLIENT_ID: ${{ secrets.CLIENT_ID}}
+         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
+         DYNAMODB_ENDPOINT: ${{ secrets.DYNAMODB_ENDPOINT }}
+         ENDPOINT: ${{ secrets.ENDPOINT }}
+         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+         SECRET_KEY: ${{ secrets.SECRET_KEY }}
+         SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+
     - name: Deploy to Lightsail
       run: >
         aws lightsail create-container-service-deployment
