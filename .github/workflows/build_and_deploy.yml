@@ -7,6 +7,10 @@ on:
    branches:
      - main
 
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   build_and_deploy_to_lightsail_container_service:
     runs-on: ubuntu-latest
