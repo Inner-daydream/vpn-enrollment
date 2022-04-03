@@ -5,7 +5,7 @@ containers:
     command: []
     environment:
       test: test
-    image: ${LATEST_VPNENROLLMENT_LIGHTSAIL_DOCKER_IMAGE}
+    image: ${LATEST_VPNENROLLMENT_IMAGE}
     ports:
       "80": HTTP
 publicEndpoint:
