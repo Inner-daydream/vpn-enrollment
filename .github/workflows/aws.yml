@@ -33,8 +33,9 @@ on:
       - v*.**
 
 env:
-  AWS_REGION: eu-west-3               
-  ECR_REPOSITORY: public.ecr.aws/f8j0p4q3/vpn_enrollment          
+  AWS_REGION: eu-west-3
+  ECR_REPOSITORY: public.ecr.aws/f8j0p4q3
+  ECR_REGISTRY: vpn_enrollment
   ECS_SERVICE: vpnenrollment              
   ECS_CLUSTER: ecs-cluster               
   ECS_TASK_DEFINITION: .aws/task-definition.json    
@@ -80,9 +81,11 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker buildx --tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --platform linux/arm64 --push
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
