@@ -34,8 +34,7 @@ on:
 
 env:
   AWS_REGION: eu-west-3
-  ECR_REPOSITORY: public.ecr.aws/f8j0p4q3
-  ECR_REGISTRY: vpn_enrollment
+  ECR_REPOSITORY: vpnenrollment
   ECS_SERVICE: vpnenrollment              
   ECS_CLUSTER: ecs-cluster               
   ECS_TASK_DEFINITION: .aws/task-definition.json    
