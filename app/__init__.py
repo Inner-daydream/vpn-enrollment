@@ -18,8 +18,6 @@ from app import routes
 
 @app.before_first_request
 def init():
-     subprocess.Popen(['export','AWS_ACCESS_KEY_ID=$_AWS_ACCESS_KEY_ID'],shell=True)
-     subprocess.Popen(['export','AWS_SECRET_ACCESS_KEY=$_AWS_SECRET_ACCESS_KEY'],shell=True)
      if dynamodb.table_exists():
           wireguard_management.retrieve_config()
      else:
