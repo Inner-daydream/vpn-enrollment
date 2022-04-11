@@ -1,7 +1,5 @@
 import flask
 import msal
-import requests
-import uuid
 
 def ms_load_cache(session):
     cache = msal.SerializableTokenCache()

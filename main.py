@@ -1,4 +1,4 @@
-from app import app
+from app import app as flask_app
 import time
 import requests
 import threading
@@ -20,7 +20,7 @@ def start_loop():
 
 if __name__ == "__main__":
     start_loop()
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    flask_app.run(host="0.0.0.0", port=8080)
 
 
 

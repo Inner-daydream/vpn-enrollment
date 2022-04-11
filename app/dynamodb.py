@@ -1,4 +1,3 @@
-from webbrowser import get
 import boto3
 import botocore.exceptions
 from boto3.dynamodb.conditions import Key
