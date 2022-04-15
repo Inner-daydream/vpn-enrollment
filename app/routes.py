@@ -9,6 +9,7 @@ import app.forms as forms
 import base64
 import app.wireguard_management as wireguard
 import io
+import requests
 
 with app.app_context():
     config = flask.current_app.config
@@ -94,7 +95,7 @@ def revoke():
     wireguard.remove_peer(Id=flask_login.current_user.id,peer_name=peer_name)
     return flask.redirect(flask.url_for("generate"))
 
-@app.route(config['REDIRECT_PATH'])  # Its absolute URL must match your app's redirect_uri set in AAD
+@app.route(config['REDIRECT_PATH'])  # Its absolute URL must match  redirect_uri set in AAD
 def ms_authorized():
     try:
         cache = oauth2.ms_load_cache(flask.session)
@@ -127,5 +128,13 @@ def ms_logout():
         "?post_logout_redirect_uri=" + flask.url_for("login", _external=True))
 
 
+@app.route("/healthz")
+def healthz():
+    r = requests.get('https://127.0.0.1:8080/', verify=False)
+    if dynamodb.table_exists() and r.status_code == 200:
+        return flask.Response(status=201)
+    else:
+        return flask.Response(status=503)
 
-app.jinja_env.globals.update(ms_build_auth_code_flow=oauth2.ms_build_auth_code_flow)  # Used in template
+        
+app.jinja_env.globals.update(ms_build_auth_code_flow=oauth2.ms_build_auth_code_flow)
