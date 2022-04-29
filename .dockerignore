@@ -6,5 +6,7 @@ venv/
 setup/
 flask_session/
 **/__pycache__/
-.github
-.aws
+.github/
+.aws/
+wg-playground/
+.terraform/
