@@ -23,12 +23,16 @@ def add_peer(peer_name,Id):
     with open(f'{config.TEMP_CONFIG_PATH}/wg0.conf',"r+") as temp_config:
         content = temp_config.read()
         content = re.sub(r"%i .*wg0-peers.conf$",f"%i {config.PRODUCTION_CONFIG_PATH}/wg0-peers.conf",content)
+        content += f" iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {config.NET_INTERFACE} -j MASQUERADE"
+        content += f"\nPostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {config.NET_INTERFACE} -j MASQUERADE"
         with open(f'{config.PRODUCTION_CONFIG_PATH}/wg0.conf',"w") as production_config:
             production_config.write(content)
+
     with open(f"{config.PRODUCTION_CONFIG_PATH}/wg0-peers.conf","a+") as production_config:
         content = production_config.read()
         content += server.config().peers
         production_config.write(content)
+        
     dynamodb.add_peer(Id=Id,peer_name=peer_name,public_key=peer.public_key,AllowedIPs=str(peer.allowed_ips))
     local_config = re.sub(r"ListenPort = \d+","",peer.config().local_config)
     local_config = re.sub(r"AllowedIPs = \d+\.\d+\.\d+\.\d+\/\d{1,2}\n",f"AllowedIPs = {config.ALLOWED_IPS}\n",local_config)

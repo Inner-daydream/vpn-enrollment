@@ -24,3 +24,4 @@ class WireGuardConfig(object):
     ENDPOINT = os.environ.get('ENDPOINT')
     KEEPALIVE = os.environ.get('KEEPALIVE') or "25"
     ALLOWED_IPS= os.environ.get('ALLOWED_IPS') or "0.0.0.0/0"
+    NET_INTERFACE=os.environ.get('NET_INTERFACE') or "eth0"
