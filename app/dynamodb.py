@@ -115,7 +115,7 @@ def create_users_table(dynamodb=None):
     return table
 
 
-def new_user(password=None,dynamodb=None,admin=False,Id=None,displayname = None):
+def new_user(password=None,dynamodb=None,admin=False,id=None,displayname = None):
     """Register a new user in the database"""
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
@@ -124,7 +124,7 @@ def new_user(password=None,dynamodb=None,admin=False,Id=None,displayname = None)
     table = dynamodb.Table('Users')
     response = table.put_item(
        Item={
-            'Id': Id,
+            'Id': id,
             'Password': password,
             'Admin': admin,
             'Displayname':displayname,

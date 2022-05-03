@@ -39,7 +39,7 @@ def login():
     )
     form = forms.LoginForm(flask.request.form)
     if form.validate_on_submit():
-        if dynamodb.validate_login(Id=form.email.data,password=form.password.data):
+        if dynamodb.validate_login(id=form.email.data,password=form.password.data):
             user = dynamodb.User(id=form.email.data)
             flask_login.login_user(user)
             return flask.redirect(flask.url_for('dashboard'))
@@ -131,9 +131,9 @@ def ms_authorized():
     except ValueError:  # Usually caused by CSRF
         pass  # Simply ignore them
     try:
-        dynamodb.get_user(Id=flask.session['user']['oid'])
+        dynamodb.get_user(id=flask.session['user']['oid'])
     except ValueError:
-        dynamodb.new_user(Id=flask.session['user']['oid'])
+        dynamodb.new_user(id=flask.session['user']['oid'])
     user = dynamodb.User(id=flask.session['user']['oid'])
     flask_login.login_user(user)
     return flask.redirect(flask.url_for('dashboard'))

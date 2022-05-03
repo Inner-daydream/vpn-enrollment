@@ -44,3 +44,4 @@ def _get_token_from_cache(scope=None,authority=None,client_secret=None,client_id
         result = cca.acquire_token_silent(scope, account=accounts[0])
         ms_save_cache(cache)
         return result
+    return None
