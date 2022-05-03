@@ -86,6 +86,7 @@ def get_peers(id,dynamodb=None):
         print(exception.response['Error']['Message'])
     if "Item" in response:
         return response['Item']['Peers']
+    return None
 
 def create_users_table(dynamodb=None):
     """Init the dynamodb table"""
@@ -132,28 +133,27 @@ def new_user(password=None,dynamodb=None,admin=False,Id=None,displayname = None)
     )
     return response
 
-def get_user(Id,dynamodb=None):
+def get_user(id,dynamodb=None):
     """get an user by id"""
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     table = dynamodb.Table('Users')
     try:
-        response = table.get_item(Key={'Id' : Id})
+        response = table.get_item(Key={'Id' : id})
     except botocore.exceptions.ClientError as exception:
         print(exception.response['Error']['Message'])
     if "Item" in response:
         return response['Item']
-    else:
-        raise ValueError("User not found")
+    raise ValueError("User not found")
 
-def validate_login(Id,password,dynamodb=None):
+def validate_login(id,password,dynamodb=None):
     """Checks if an user credentials are correct"""
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
         table = dynamodb.Table('Users')
     try:
         response = table.query(
-            KeyConditionExpression = Key('Id').eq(Id)
+            KeyConditionExpression = Key('Id').eq(id)
         )
         with open('validate_login.log','w', encoding='UTF-8') as file:
             file.write(str(response))
