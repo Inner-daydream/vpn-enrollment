@@ -1,13 +1,13 @@
 """Provides user enrollment utilities to app and cli"""
 import argparse
 import bcrypt
-import app.dynamodb as dynamodb
+from app import dynamodb
 
 def enroll_user(password,email,displayname,admin=False):
     """Creates a new user"""
     password = bytes(password,'UTF-8')
     hashed_password = bcrypt.hashpw(password,bcrypt.gensalt())
-    dynamodb.new_user(password=hashed_password,admin=admin,Id=email,displayname=displayname)
+    dynamodb.new_user(password=hashed_password,admin=admin,id=email,displayname=displayname)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

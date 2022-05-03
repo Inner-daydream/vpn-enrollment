@@ -71,8 +71,7 @@ def compare_faces():
         if response['FaceMatches'][0]['Similarity'] >= 98:
             flask.session['facial_recognition'] = True
             return "Match"
-        else:
-            return "NoMatch"
+        return "NoMatch"
     except (botocore.exceptions.ClientError,IndexError,KeyError):
     # These errors are typically raised when a face isn't detected, isn't able to be processed etc
         return "NoMatch"
