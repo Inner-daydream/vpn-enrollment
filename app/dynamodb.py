@@ -1,15 +1,22 @@
+"""Provides database interaction"""
+import base64
+import bcrypt
+
 import boto3
 import botocore.exceptions
 from boto3.dynamodb.conditions import Key
-import bcrypt
-import base64
-import config
+
 import flask_login
 import flask
 
-config = config.AWSConfig
+import config
+
+
+
+Config = config.AWSConfig
 
 class User(flask_login.UserMixin):
+    """User class used by flask_login"""
     def __init__(self, id,session=flask.session):
         user_data = get_user(id)
         self.id = id
@@ -22,15 +29,16 @@ class User(flask_login.UserMixin):
             self.username = user_data['Displayname']
         self.facial_recognition = session['facial_recognition']
 
-def add_peer(Id,peer_name,public_key,AllowedIPs,dynamodb=None):
+def add_peer(id,peer_name,public_key,allowed_ips,dynamodb=None):
+    """Register a peer in the database"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     table = dynamodb.Table('Users')
     response = table.update_item(
         Key={
-            "Id": Id
+            "Id": id
         },
-        UpdateExpression=f"set #AttributeName.#NestedAttributeName=:p",
+        UpdateExpression="set #AttributeName.#NestedAttributeName=:p",
         ExpressionAttributeNames={
             "#NestedAttributeName": peer_name,
             "#AttributeName": "Peers"
@@ -39,22 +47,23 @@ def add_peer(Id,peer_name,public_key,AllowedIPs,dynamodb=None):
         ExpressionAttributeValues={
             ':p': {
                 "Public_key": public_key,
-                "AllowedIPs": AllowedIPs,
+                "AllowedIPs": allowed_ips,
                 "Description": peer_name
             }
         },
         ReturnValues="UPDATED_NEW"
     )
     return response
-def remove_peer(Id,peer_name,dynamodb=None):
+def remove_peer(id,peer_name,dynamodb=None):
+    """Remove a peer from the database"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     table = dynamodb.Table('Users')
     response = table.update_item(
         Key={
-            "Id": Id
+            "Id": id
         },
-        UpdateExpression=f"remove #AttributeName.#NestedAttributeName",
+        UpdateExpression="remove #AttributeName.#NestedAttributeName",
         ExpressionAttributeNames={
             "#NestedAttributeName": peer_name,
             "#AttributeName": "Peers"
@@ -63,23 +72,25 @@ def remove_peer(Id,peer_name,dynamodb=None):
         ReturnValues="UPDATED_NEW"
     )
     return response
-def get_peers(Id,dynamodb=None):
+def get_peers(id,dynamodb=None):
+    """Get a user peer list"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     table = dynamodb.Table('Users')
     try:
         response = table.get_item(
-            Key={'Id' : Id},
+            Key={'Id' : id},
             ProjectionExpression="Peers"
         )
-    except botocore.exceptions.ClientError as e:
-        print(e.response['Error']['Message'])
+    except botocore.exceptions.ClientError as exception:
+        print(exception.response['Error']['Message'])
     if "Item" in response:
         return response['Item']['Peers']
-    
+
 def create_users_table(dynamodb=None):
+    """Init the dynamodb table"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
 
     table = dynamodb.create_table(
         TableName='Users',
@@ -104,8 +115,9 @@ def create_users_table(dynamodb=None):
 
 
 def new_user(password=None,dynamodb=None,admin=False,Id=None,displayname = None):
+    """Register a new user in the database"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     if password:
         password=base64.b64encode(password)
     table = dynamodb.Table('Users')
@@ -121,27 +133,29 @@ def new_user(password=None,dynamodb=None,admin=False,Id=None,displayname = None)
     return response
 
 def get_user(Id,dynamodb=None):
+    """get an user by id"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     table = dynamodb.Table('Users')
     try:
         response = table.get_item(Key={'Id' : Id})
-    except botocore.exceptions.ClientError as e:
-        print(e.response['Error']['Message'])
+    except botocore.exceptions.ClientError as exception:
+        print(exception.response['Error']['Message'])
     if "Item" in response:
         return response['Item']
     else:
         raise ValueError("User not found")
 
 def validate_login(Id,password,dynamodb=None):
+    """Checks if an user credentials are correct"""
     if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
         table = dynamodb.Table('Users')
     try:
         response = table.query(
             KeyConditionExpression = Key('Id').eq(Id)
         )
-        with open('validate_login.log','w') as file:
+        with open('validate_login.log','w', encoding='UTF-8') as file:
             file.write(str(response))
         user_password = base64.b64decode(response['Items'][0]['Password'].value)
         password = bytes(password,'UTF-8')
@@ -150,11 +164,11 @@ def validate_login(Id,password,dynamodb=None):
         return False
 
 def table_exists(client=None):
+    """Check if the Users table exists"""
     if not client:
-        client = boto3.client('dynamodb', endpoint_url=config.DYNAMODB_ENDPOINT) 
+        client = boto3.client('dynamodb', endpoint_url=Config.DYNAMODB_ENDPOINT)
     try:
         client.describe_table(TableName='Users')
         return True
     except client.exceptions.ResourceNotFoundException:
         return False
-
