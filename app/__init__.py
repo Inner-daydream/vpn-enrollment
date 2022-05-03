@@ -8,7 +8,7 @@ import flask_session
 
 import config
 
-from app import wireguard_management, enroll, dynamodb, routes
+from app import wireguard_management, enroll, dynamodb
 
 login_manager = flask_login.LoginManager()
 app = flask.Flask(__name__)
