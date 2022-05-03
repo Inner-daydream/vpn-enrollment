@@ -8,7 +8,7 @@ window.onload = async function() {
 	video.srcObject = stream;
 }
 
-var result = video.addEventListener( "loadedmetadata", function (event) {
+var result = video.addEventListener( "loadedmetadata", function() {
 	canvas.height = this.videoHeight;
 	canvas.width = this.videoWidth;
 }, false );
