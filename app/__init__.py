@@ -5,9 +5,7 @@ import subprocess
 import flask
 import flask_login
 import flask_session
-
 import config
-
 from app import wireguard_management, enroll, dynamodb
 
 login_manager = flask_login.LoginManager()
@@ -16,7 +14,7 @@ app.config.from_object(config.FlaskConfig)
 login_manager.init_app(app)
 flask_session.Session(app)
 
-
+from app import routes # pylint: disable=wrong-import-position
 
 @app.before_first_request
 def init():
