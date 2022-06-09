@@ -31,12 +31,11 @@ def add_peer(peer_name,id):
         content = temp_config.read()
         content = re.sub(
             r"%i .*wg0-peers.conf$",
-            f"%i {Config.PRODUCTION_CONFIG_PATH}/wg0-peers.conf",
+            f'%i {Config.PRODUCTION_CONFIG_PATH}/wg0-peers.conf;' \
+              'iptables -A FORWARD -i %i -j ACCEPT;' \
+              'iptables -A FORWARD -o %i -j ACCEPT;' \
+             f"iptables -t nat -A POSTROUTING -o {Config.NET_INTERFACE} -j MASQUERADE",
             content)
-        content += \
-            'iptables -A FORWARD -i %i -j ACCEPT;' \
-            'iptables -A FORWARD -o %i -j ACCEPT;' \
-            f"iptables -t nat -A POSTROUTING -o {Config.NET_INTERFACE} -j MASQUERADE"
         content += \
             '\nPostDown = iptables -D FORWARD -i %i -j ACCEPT;' \
             'iptables -D FORWARD -o %i -j ACCEPT;' \
