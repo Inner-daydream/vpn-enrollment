@@ -3,7 +3,7 @@ import time
 import threading
 import requests
 
-from app import app as flask_app
+from app import app
 
 
 def start_loop():
@@ -24,4 +24,4 @@ def start_loop():
 
 if __name__ == "__main__":
     start_loop()
-    flask_app.run(host="0.0.0.0", port=8080,ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=8080,ssl_context='adhoc')
